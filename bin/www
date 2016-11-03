@@ -1,0 +1,129 @@
+#!/usr/bin/env node
+
+/*
+process.on('uncaughtException', function(e) {
+    console.log("something went wrong");
+    console.log('uncaughtException');
+    console.log(e.stack);
+    process.exit(0);
+});
+*/
+process.on('unhandledRejection', function(message, p) {
+    console.log("something went wrong with promises");
+    console.log('unhandledRejection');
+    console.log(message,p);
+    process.exit(0);
+});
+
+process.on('rejectionHandled', function(p) {
+  console.log(p);
+});
+
+var debug = require('debug')('tasksServer:server');
+/**
+ * Module dependencies.
+ */
+var dbConnectPromise = require('../lib/connections');
+dbConnectPromise.then(startServer, reportDbConnectionErrorAndExit).catch(somethingWentWrong);
+
+var app = require('../app');
+
+var http = require('http');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+
+var server;
+function startServer() {
+	server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+	server.listen(port);
+	server.on('error', onError);
+	server.on('listening', onListening);
+}
+
+function reportDbConnectionErrorAndExit(error) {
+	console.log(error);
+	console.log('Exiting the App. Please ensure mongod is running and restart the app...');
+	process.exit(0);
+}
+
+function somethingWentWrong(error) {
+	console.log('Something went wrong');
+	console.log(error);
+	console.log('exiting....');
+	process.exit(0);
+}
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
