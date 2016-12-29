@@ -25,12 +25,23 @@ router.post('/registerUser', function(req, res, next) {
 	formatResponseAndSend(req, res, next, userRegistrationPromise, 'User Registered');
 });
 
-/* Register User */
+/*User login - using user name and password */
 router.post('/authenticateUser', function(req, res, next) {
 	debug('inside router POST authenticateUser ');
 	debug('userName : ', req.body.userName);
 	debug('password : ', req.body.password);
 	var userAuthenticationPromise = users.authenticate(req.body.userName, req.body.password);
 	formatResponseAndSend(req, res, next, userAuthenticationPromise, 'User Authenticated');
+});
+
+/*User authenticated through fb */
+router.post('/fbAuthenticateUser', function(req, res, next) {
+    debug('inside router POST fbAuthenticateUser ');
+	debug('fb user Id : ', req.body.fbUserId);
+    debug('fb User Name : ', req.body.fbUserName);
+    debug('fb email : ', req.body.fbEmail);
+    debug('fb profile picture : ', req.body.fbProfilePicture);
+    var fbAuthenticatedPromise = users.fbAuthenticate(req.body.fbUserId, req.body.fbUserName, req.body.fbEmail, req.body.fbProfilePicture);
+	formatResponseAndSend(req, res, next, fbAuthenticatedPromise, 'User Authenticated');
 });
 module.exports = router;

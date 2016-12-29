@@ -3,3 +3,5 @@ db/
 log/
 config/config.json
 Thumbs.db
+db_test.js
+typings/

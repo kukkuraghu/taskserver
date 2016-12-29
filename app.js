@@ -5,6 +5,8 @@ var express = require('express');
 var fs = require('fs');
 var path = require('path');
 var favicon = require('serve-favicon');
+var jwt = require('jsonwebtoken');
+var config = require('./config');
 var FileStreamRotator = require('file-stream-rotator');
 var logger = require('morgan');
 var logDirectory = path.join(__dirname, 'log');
@@ -60,14 +62,16 @@ app.set('env', env);
 
 
 app.use(function(req, res, next) {
-	debug('req.origin : ', req.headers.origin);
+	//debug('req.origin : ', req.headers.origin);
+    debug('base url : ', req.baseUrl);
+    debug('original url : ', req.originalUrl);
 	if (req.headers.origin) {
 		res.header('Access-Control-Allow-Origin', req.headers.origin);
 	}
 	if (req.method === 'OPTIONS') {
 		debug('req.method : ', req.method);
 		res.header('Access-Control-Allow-Methods', 'GET, POST');
-		res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, x-access-token");
 		res.header("Access-Control-Max-Age", 24*60*60);
 		res.status(200).send();
 	}
@@ -76,6 +80,24 @@ app.use(function(req, res, next) {
 	}
 });
 
+app.use(function(req, res, next){
+	// check header  for token
+    var token = req.body.token || req.query.token || req.headers[ 'x-access-token' ];
+    // decode token
+    if (token) {
+        // verifies secret and checks exp
+        try {
+            var tokenDecoded = jwt.verify(token, config.secret);
+        }
+        catch (error) {
+            //token available, but failed to authenticate. send authorization required status.
+            debug("error in decoding token. sending http status 401");
+            return res.status(401).json({ status: 0, message: "authentication failed" });
+        }
+        req.tokenDecoded = tokenDecoded;
+    }
+    next();
+});
 
 //app.use('/', routes);
 app.use('/utils', utils);

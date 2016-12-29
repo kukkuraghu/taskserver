@@ -16,6 +16,7 @@
     "express": "~4.13.4",
     "file-stream-rotator": "0.0.7",
     "jade": "~1.11.0",
+    "jsonwebtoken": "^7.2.1",
     "mongoose": "^4.6.0",
     "morgan": "~1.7.0",
     "q": "^1.4.1",
