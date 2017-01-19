@@ -44,4 +44,15 @@ router.post('/fbAuthenticateUser', function(req, res, next) {
     var fbAuthenticatedPromise = users.fbAuthenticate(req.body.fbUserId, req.body.fbUserName, req.body.fbEmail, req.body.fbProfilePicture);
 	formatResponseAndSend(req, res, next, fbAuthenticatedPromise, 'User Authenticated');
 });
+
+/*User authenticated through google */
+router.post('/googleAuthenticateUser', function(req, res, next) {
+    debug('inside router POST googleAuthenticateUser ');
+	debug('google user Id : ', req.body.googleUserId);
+    debug('google User Name : ', req.body.googleUserName);
+    debug('google email : ', req.body.googleEmail);
+    debug('google profile picture : ', req.body.googleProfilePicture);
+    var googleAuthenticatedPromise = users.googleAuthenticate(req.body.googleUserId, req.body.googleUserName, req.body.googleEmail, req.body.googleProfilePicture);
+	formatResponseAndSend(req, res, next, googleAuthenticatedPromise, 'User Authenticated');
+});
 module.exports = router;

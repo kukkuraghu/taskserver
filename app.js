@@ -91,7 +91,7 @@ app.use(function(req, res, next){
         }
         catch (error) {
             //token available, but failed to authenticate. send authorization required status.
-            debug("error in decoding token. sending http status 401");
+            debug("error in decoding token. sending http status 401", error);
             return res.status(401).json({ status: 0, message: "authentication failed" });
         }
         req.tokenDecoded = tokenDecoded;
