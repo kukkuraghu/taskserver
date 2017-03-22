@@ -1,0 +1,7 @@
+{
+    "mongoURI": "mongodb://localhost:27017/tasksDb",
+	"server_port" : "8080",
+	"server_ip" : "localhost",
+    "secret": "test secret",
+	"tokenExpiry" : "7d"
+}
